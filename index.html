@@ -31,6 +31,27 @@
 
   <title>LamLim</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- reCAPTCHA Enterprise. Loads the JS API used to protect actions. -->
+  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LfG1eYtAAAAAHiep4T18aQ1KokzCL-KqqjZ98UI"></script>
+  <script>
+    // Resolves with a reCAPTCHA Enterprise token for the given action.
+    // account_id for Account Defense is sent server-side in the assessment.
+    window.lamlimExecuteRecaptcha = function (siteKey, action) {
+      return new Promise(function (resolve, reject) {
+        if (!window.grecaptcha || !grecaptcha.enterprise) {
+          reject(new Error('reCAPTCHA Enterprise not loaded'));
+          return;
+        }
+        grecaptcha.enterprise.ready(function () {
+          grecaptcha.enterprise
+            .execute(siteKey, { action: action })
+            .then(resolve)
+            .catch(reject);
+        });
+      });
+    };
+  </script>
 </head>
 <body>
   <!-- Container for the inline reCAPTCHA used by Firebase phone auth on web. -->
